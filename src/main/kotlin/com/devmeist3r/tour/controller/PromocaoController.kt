@@ -1,68 +1,54 @@
 package com.devmeist3r.tour.controller
 
 import com.devmeist3r.tour.model.Promocao
+import com.devmeist3r.tour.service.PromocaoService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
-import java.util.concurrent.ConcurrentHashMap
 
 @RestController
+@RequestMapping(value = ["/promocoes"])
 class PromocaoController {
 
   @Autowired
-  lateinit var promocoes: ConcurrentHashMap<Long, Promocao>
+  lateinit var promocaoService: PromocaoService
 
   /**
    * Funcão para pegar promocao por id
    **/
-  @RequestMapping(value = ["/promocoes/{id}"], method = arrayOf(RequestMethod
-    .GET))
-  fun getById(@PathVariable id: Long) = promocoes[id]
+  @GetMapping("/{id}")
+  fun getById(@PathVariable id: Long) = this.promocaoService.getById(id)
 
   /**
    * Funcão para criar uma nova promocao
    **/
-  @RequestMapping(value = ["/promocoes"], method = arrayOf(RequestMethod
-    .POST))
+  @PostMapping()
   fun create(@RequestBody promocao: Promocao) {
-    promocoes[promocao.id] = promocao
+    this.create(promocao)
   }
 
   /**
    * Funcão para excluir uma promocao
    **/
-  @RequestMapping(value = ["/promocoes/{id}"], method = arrayOf(RequestMethod
-    .DELETE))
+  @DeleteMapping("/{id}")
   fun delete(@PathVariable id: Long) {
-    promocoes.remove(id)
+    this.delete(id)
   }
 
   /**
    * Funcão para alteracao uma promocao
    **/
-  @RequestMapping(value = ["/promocoes/{id}"], method = arrayOf(RequestMethod
-    .PUT))
+  @PutMapping("/{id}")
   fun update(@PathVariable id: Long, @RequestBody promocao: Promocao) {
-    promocoes.remove(id)
-    promocoes[id] = promocao
+    this.promocaoService.update(id, promocao)
   }
 
   /**
    * Funcão para listar todas as promocoes
    **/
-  @RequestMapping(value = ["/promocoes"], method = arrayOf(RequestMethod.GET))
+  @GetMapping()
   fun getAll(@RequestParam(required = false, defaultValue = "") localFilter:
-             String) =
-    promocoes.filter {
-      it.value.local.contains(localFilter, true)
-    }.map (Map.Entry<Long, Promocao>::value).toList()
+             String) = this.promocaoService.searchByLocal(localFilter)
 
 
 }
 
-//  /**
-//   * Funcão de teste
-//   **/
-//  @RequestMapping(value = ["/sayHello"], method = arrayOf(RequestMethod.GET))
-//  fun sayHello(): String {
-//    return "Hello World"
-//  }
