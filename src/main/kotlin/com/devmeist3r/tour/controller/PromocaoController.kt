@@ -1,5 +1,6 @@
 package com.devmeist3r.tour.controller
 
+import com.devmeist3r.tour.model.ErrorMessage
 import com.devmeist3r.tour.model.Promocao
 import com.devmeist3r.tour.model.RespostaJSON
 import com.devmeist3r.tour.service.PromocaoService
@@ -8,7 +9,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.util.*
-import javax.xml.ws.Response
+
 
 @RestController
 @RequestMapping(value = ["/promocoes"])
@@ -21,11 +22,25 @@ class PromocaoController {
    * Funcão para pegar promocao por id
    **/
   @GetMapping("/{id}")
-  fun getById(@PathVariable id: Long): ResponseEntity<Promocao?> {
+  fun getById(@PathVariable id: Long): ResponseEntity<Any> {
     val promocao = this.promocaoService.getById(id)
-    val status = if (promocao == null) HttpStatus.NOT_FOUND else HttpStatus.OK
-    return ResponseEntity(promocao, status)
+
+    return if (promocao != null)
+      return ResponseEntity(promocao, HttpStatus.OK)
+    else
+      return ResponseEntity(
+        ErrorMessage("Promocão não localizada", "promoção ${id} não localizada"),
+        HttpStatus.NOT_FOUND
+      )
   }
+
+//  @GetMapping("/{id}")
+//  fun getById(@PathVariable id: Long): ResponseEntity<Promocao?> {
+//    var promocao = this.promocaoService.getById(id) ?:
+//    throw PromocaoNotFoundException("promocao $id nao localizada")
+//
+//    return ResponseEntity(promocao, HttpStatus.OK)
+//  }
 
   /**
    * Funcão para criar uma nova promocao
