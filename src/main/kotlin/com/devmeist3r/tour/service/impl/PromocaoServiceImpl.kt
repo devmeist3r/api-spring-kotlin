@@ -1,47 +1,51 @@
 package com.devmeist3r.tour.service.impl
 
 import com.devmeist3r.tour.model.Promocao
+import com.devmeist3r.tour.repository.PromocaoRepository
 import com.devmeist3r.tour.service.PromocaoService
 import org.springframework.stereotype.Component
 import java.util.concurrent.ConcurrentHashMap
 
 
 @Component
-class PromocaoServiceImpl: PromocaoService {
+class PromocaoServiceImpl(val promocaoRepository: PromocaoRepository): PromocaoService {
 
-  companion object {
-    val initialPromocoes = arrayOf(
-      Promocao(1, "Maravilhosa viagem", "Cancun", true, 7, 4200.99),
-      Promocao(2, "Maravilhosa viagem", "Bahamas", true, 7, 4100.99),
-      Promocao(3, "Maravilhosa viagem", "Porto Rico", true, 7, 4900.99),
-      Promocao(4, "Maravilhosa viagem", "Panamá", true, 7, 4700.99),
-    )
-  }
-
-  var promocoes =
-    ConcurrentHashMap<Long, Promocao>(initialPromocoes.associateBy(Promocao::id))
+//  companion object {
+//    val initialPromocoes = arrayOf(
+//      Promocao(1, "Maravilhosa viagem", "Cancun", true, 7, 4200.99),
+//      Promocao(2, "Maravilhosa viagem", "Bahamas", true, 7, 4100.99),
+//      Promocao(3, "Maravilhosa viagem", "Porto Rico", true, 7, 4900.99),
+//      Promocao(4, "Maravilhosa viagem", "Panamá", true, 7, 4700.99),
+//    )
+//  }
+//
+//  var promocoes =
+//    ConcurrentHashMap<Long, Promocao>(initialPromocoes.associateBy(Promocao::id))
 
   override fun create(promocao: Promocao) {
-    promocoes[promocao.id] = promocao
+    this.promocaoRepository.save(promocao)
   }
 
   override fun getById(id: Long): Promocao? {
-    return promocoes[id]
+    return this.promocaoRepository.findById(id).orElseGet(null)
   }
 
   override fun delete(id: Long) {
-    promocoes.remove(id)
+    this.promocaoRepository.deleteById(id)
   }
 
   override fun update(id: Long, promocao: Promocao) {
-    delete(id)
-    create(promocao)
+    this.create(promocao)
   }
 
-  override fun searchByLocal(local: String): List<Promocao> {
-    return promocoes.filter {
-      it.value.local.contains(local, true)
-    }.map (Map.Entry<Long, Promocao>::value).toList()
+  override fun searchByLocal(local: String): List<Promocao> = listOf()
+
+  override fun getAll(): List<Promocao> {
+    return this.promocaoRepository.findAll().toList()
+  }
+
+  override fun count(): Long {
+    return this.promocaoRepository.count()
   }
 
 }

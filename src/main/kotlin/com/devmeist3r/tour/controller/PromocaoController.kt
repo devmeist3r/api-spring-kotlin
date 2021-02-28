@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.util.*
+import javax.xml.ws.Response
 
 
 @RestController
@@ -86,20 +87,16 @@ class PromocaoController {
    **/
   @GetMapping()
   fun getAll(
-    @RequestParam(required = false, defaultValue = "") localFilter:
-    String
+    @RequestParam(required = false, defaultValue = "")
+    localFilter: String
   ): ResponseEntity<List<Promocao?>> {
-    var status = HttpStatus.OK
-    val listaPromocoes = this.promocaoService.searchByLocal(localFilter)
-
-    if (this.promocaoService.searchByLocal(localFilter).isEmpty()) {
-      status = HttpStatus.NOT_FOUND
-    }
-
-    return ResponseEntity(listaPromocoes, status)
-
+    val listPromocoes = this.promocaoService.getAll()
+    val status = if(listPromocoes.isEmpty()) HttpStatus.NOT_FOUND else HttpStatus.OK
+    return ResponseEntity(listPromocoes, status)
   }
 
-
+  @GetMapping("/count")
+  fun count(): ResponseEntity<Map<String, Long>> =
+    ResponseEntity.ok().body(mapOf("count" to this.promocaoService.count()))
 }
 

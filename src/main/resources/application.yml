@@ -6,8 +6,11 @@ spring:
     password: docker
 
   jpa:
-    generate-ddl: true
     show-sql: true
+    hibernate:
+#      ddl-auto: create-drop
+    generate-ddl: true
+
 
   output:
     ansi:
