@@ -4,11 +4,12 @@ spring:
     url: jdbc:mysql://localhost:3306/tour
     username: root
     password: docker
+    initialization-mode: always
 
   jpa:
     show-sql: true
     hibernate:
-#      ddl-auto: create-drop
+      ddl-auto: create-drop
     generate-ddl: true
 
 

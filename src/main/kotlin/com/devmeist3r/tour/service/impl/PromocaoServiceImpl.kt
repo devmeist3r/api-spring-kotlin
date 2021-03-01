@@ -3,6 +3,9 @@ package com.devmeist3r.tour.service.impl
 import com.devmeist3r.tour.model.Promocao
 import com.devmeist3r.tour.repository.PromocaoRepository
 import com.devmeist3r.tour.service.PromocaoService
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Component
 import java.util.concurrent.ConcurrentHashMap
 
@@ -40,12 +43,17 @@ class PromocaoServiceImpl(val promocaoRepository: PromocaoRepository): PromocaoS
 
   override fun searchByLocal(local: String): List<Promocao> = listOf()
 
-  override fun getAll(): List<Promocao> {
-    return this.promocaoRepository.findAll().toList()
+  override fun getAll(start: Int, size: Int): List<Promocao> {
+    val pages: Pageable = PageRequest.of(start, size, Sort.by("local").ascending())
+    return this.promocaoRepository.findAll(pages).toList()
   }
 
   override fun count(): Long {
     return this.promocaoRepository.count()
+  }
+
+  override fun getAllSortedByLocal(): List<Promocao> {
+    return this.promocaoRepository.findAll(Sort.by("local").descending()).toList()
   }
 
 }
